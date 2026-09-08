@@ -790,15 +790,18 @@ def request_params_to_args(
     if isinstance(received_params, (QueryParams, Headers, ImmutableMultiDict)):
         # Preserve Starlette data structures to maintain .getlist() functionality
         filtered_items = [
-            (k, v) for k, v in received_params.multi_items() 
+            (k, v)
+            for k, v in received_params.multi_items()
             if (isinstance(k, str) and k != "") or (isinstance(k, bytes) and k != b"")
         ]
-        
+
         # Headers specifically requires the 'raw' argument with bytes
         if isinstance(received_params, Headers):
             raw_items = [
-                (k.encode("latin-1") if isinstance(k, str) else k,
-                 v.encode("latin-1") if isinstance(v, str) else v)
+                (
+                    k.encode("latin-1") if isinstance(k, str) else k,
+                    v.encode("latin-1") if isinstance(v, str) else v,
+                )
                 for k, v in filtered_items
             ]
             received_params = Headers(raw=raw_items)
