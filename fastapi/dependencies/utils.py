@@ -787,8 +787,17 @@ def request_params_to_args(
     if not fields:
         return values, errors
 
-    if isinstance(received_params, (QueryParams, Headers, ImmutableMultiDict)):
-        received_params = type(received_params)(
+    if isinstance(received_params, QueryParams):
+        received_params = QueryParams(
+            [(k, v) for k, v in received_params.multi_items() if k != ""]
+        )
+    elif isinstance(received_params, Headers):
+        received_params = Headers(
+            raw=[(k.encode(), v.encode()) if isinstance(k, str) else (k, v) 
+                 for k, v in received_params.raw if k != b""]
+        )
+    elif isinstance(received_params, type(ImmutableMultiDict())):
+        received_params = type(ImmutableMultiDict())(
             [(k, v) for k, v in received_params.multi_items() if k != ""]
         )
     else:
