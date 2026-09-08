@@ -787,26 +787,7 @@ def request_params_to_args(
     if not fields:
         return values, errors
 
-    if isinstance(received_params, QueryParams):
-        received_params = QueryParams(
-            [(k, v) for k, v in received_params.multi_items() if k != ""]
-        )
-    elif isinstance(received_params, Headers):
-        received_params = Headers(
-            raw=[
-                (k.encode("latin-1"), v.encode("latin-1"))
-                if isinstance(k, str)
-                else (k, v)
-                for k, v in received_params.raw
-                if k != b""
-            ]
-        )
-    elif isinstance(received_params, ImmutableMultiDict):
-        received_params = ImmutableMultiDict(
-            [(k, v) for k, v in received_params.multi_items() if k != ""]
-        )
-    else:
-        received_params = {k: v for k, v in received_params.items() if k != ""}
+    received_params = {k: v for k, v in received_params.items() if k != ""}
 
     first_field = fields[0]
     fields_to_extract = fields
