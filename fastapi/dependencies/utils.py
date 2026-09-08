@@ -787,6 +787,13 @@ def request_params_to_args(
     if not fields:
         return values, errors
 
+    if isinstance(received_params, (QueryParams, Headers, ImmutableMultiDict)):
+        received_params = type(received_params)(
+            [(k, v) for k, v in received_params.multi_items() if k != ""]
+        )
+    else:
+        received_params = {k: v for k, v in received_params.items() if k != ""}
+
     first_field = fields[0]
     fields_to_extract = fields
     single_not_embedded_field = False
