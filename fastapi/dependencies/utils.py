@@ -793,8 +793,13 @@ def request_params_to_args(
         )
     elif isinstance(received_params, Headers):
         received_params = Headers(
-            raw=[(k.encode("latin-1"), v.encode("latin-1")) if isinstance(k, str) else (k, v)
-                 for k, v in received_params.raw if k != b""]
+            raw=[
+                (k.encode("latin-1"), v.encode("latin-1"))
+                if isinstance(k, str)
+                else (k, v)
+                for k, v in received_params.raw
+                if k != b""
+            ]
         )
     elif isinstance(received_params, ImmutableMultiDict):
         received_params = ImmutableMultiDict(
