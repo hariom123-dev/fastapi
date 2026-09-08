@@ -1,14 +1,16 @@
-from typing import Optional
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 app = FastAPI()
 
+
 @app.get("/items/")
-def read_items(q: Optional[str] = None):
+def read_items(q: str | None = None):
     return {"q": q}
 
+
 client = TestClient(app)
+
 
 def test_query_params_empty_keys_ignored():
     # Sending a request with empty keys (e.g. dangling '&' or '?=')

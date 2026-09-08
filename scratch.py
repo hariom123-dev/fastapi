@@ -1,6 +1,7 @@
 import sys
+
 sys.path.insert(0, r"E:\post hog\fastapi")
-from starlette.datastructures import QueryParams, Headers
+from starlette.datastructures import Headers, QueryParams
 
 q = QueryParams([("a", "1"), ("", "2"), ("a", "3")])
 q_filtered = type(q)([(k, v) for k, v in q.multi_items() if k != ""])
