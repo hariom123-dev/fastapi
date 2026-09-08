@@ -787,7 +787,25 @@ def request_params_to_args(
     if not fields:
         return values, errors
 
-    received_params = {k: v for k, v in received_params.items() if k != ""}
+    if isinstance(received_params, (QueryParams, Headers, ImmutableMultiDict)):
+        # Preserve Starlette data structures to maintain .getlist() functionality
+        filtered_items = [
+            (k, v) for k, v in received_params.multi_items() 
+            if (isinstance(k, str) and k != "") or (isinstance(k, bytes) and k != b"")
+        ]
+        
+        # Headers specifically requires the 'raw' argument with bytes
+        if isinstance(received_params, Headers):
+            raw_items = [
+                (k.encode("latin-1") if isinstance(k, str) else k,
+                 v.encode("latin-1") if isinstance(v, str) else v)
+                for k, v in filtered_items
+            ]
+            received_params = Headers(raw=raw_items)
+        else:
+            received_params = type(received_params)(filtered_items)
+    elif isinstance(received_params, dict):
+        received_params = {k: v for k, v in received_params.items() if k != ""}
 
     first_field = fields[0]
     fields_to_extract = fields
